@@ -26,7 +26,10 @@ const createTasks = async (req, res) => {
 const getAlltasks = async (req, res) => {
     try {
         var allTasks = await Task.find();
-        res.status(200).json({ "tasks": allTasks });
+        var resData = _.map(allTasks, (task) =>
+            _.pick(task, ['title', 'is_completed', 'id'])
+        )
+        res.status(200).json({ "tasks": resData });
     } catch (e) {
         res.status(500).end();
     }
@@ -38,7 +41,8 @@ const getTaskById = async (req, res) => {
         var taskId = mongoId(req.params.id);
         var task = taskId && await Task.findOne({ _id: taskId });
         if (task) {
-            res.status(200).json(task);
+            var resData =  _.pick(task, ['title', 'is_completed', 'id']);
+            res.status(200).json(resData);
         } else {
             res.status(404).json({
                 "error": "There is no task at that id"
